@@ -18,7 +18,15 @@ class examdata:
         return self.df['score'].isnull().sum()
     def get_dtypes(self):
         return self.df.dtypes
+    def get_group_info(self):
+        group_mean=self.df.groupby('group')['score'].mean()
+        group_count=self.df.groupby('group').size()
+        summary=pd.concat([group_mean,group_count],axis=1).reset_index()
+        summary.columns = ['group', 'mean_score', 'number_of_students']
+        return summary
+    def save_info(self):
+        summary=self.get_group_info()
+        summary.to_csv('../output/summary_groups.csv',index=False)
 exam1=examdata("../data/exam.csv")
-print(exam1.get_describe())
-print("Бағасы қойылмаған группалар:",exam1.not_graded())
-print(exam1.get_dtypes())
+print(exam1.get_group_info())
+exam1.save_info()
